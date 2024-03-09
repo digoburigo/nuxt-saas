@@ -1,0 +1,11 @@
+# docker-compose.yml
+version: '3.9'
+
+services:
+  app:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # expose the right ports
+    ports: ['3000:3000']
