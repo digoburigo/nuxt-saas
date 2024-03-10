@@ -66,7 +66,12 @@ const onSubmit = handleSubmit(async (values) => {
       </FormItem>
     </FormField>
     <Button :disabled="isLoading" type="submit">
-      <LucideSpinner v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" />
+      <Icon
+        v-if="isLoading"
+        class="w-4 h-4 mr-2 animate-spin"
+        aria-hidden="true"
+        name="uil:fidget-spinner"
+      />
       {{ $t('login.form.confirm') }}
     </Button>
     <p>{{ error }}</p>

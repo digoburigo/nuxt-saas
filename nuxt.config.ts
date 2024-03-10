@@ -26,6 +26,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxt/image',
     '@vue-email/nuxt',
+    'nuxt-icon',
   ],
   app: {},
   css: ['./assets/css/tailwind.css'],
@@ -58,7 +59,13 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy:
         process.env.NODE_ENV === 'development' ? 'unsafe-none' : 'require-corp',
       contentSecurityPolicy: {
-        'img-src': ["'self'", 'data:', 'https://tile.openstreetmap.org'],
+        'img-src': [
+          "'self'",
+          'data:',
+          'https://github.com',
+          'https://avatars.githubusercontent.com',
+          'https://images.unsplash.com',
+        ],
         'script-src-attr': ["'unsafe-inline'"],
       },
       permissionsPolicy: {

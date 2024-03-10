@@ -3,6 +3,7 @@ definePageMeta({
   layout: 'dashboard',
 });
 </script>
+
 <template>
-  <div>dashboard</div>
+  <div>lorem2000</div>
 </template>
