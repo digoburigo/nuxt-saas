@@ -12,17 +12,31 @@ generator client {
     provider = "prisma-client-js"
 }
 
+plugin hooks {
+    provider = '@zenstackhq/tanstack-query'
+    target = 'vue'
+    output = 'lib/hooks'
+}   
+
 /**
  * User model
  */
 model User {
     id String @id @default(cuid())
+    firstName String?
+    lastName String?
+    name String?
     email String @unique @email
     password String @password @omit @length(8, 16)
     posts Post[]
 
+    // lucia-auth
+    sessions Session[]
+
     // everybody can signup
     @@allow('create', true)
+
+    @@allow('read', true)
 
     // full access by self
     @@allow('all', auth() == this)
@@ -47,3 +61,23 @@ model Post {
     // full access by author
     @@allow('all', author == auth())
 }
+
+model Todo {
+    id String @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    title String
+    completed Boolean @default(false)
+}
+
+
+model Session {
+    id String @id @default(cuid())
+    expiresAt DateTime
+
+    user User @relation(references: [id], fields: [userId], onDelete: Cascade)
+    userId String
+
+    //   @@allow('all', user == auth())
+}
+

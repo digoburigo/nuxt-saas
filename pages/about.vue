@@ -1,30 +1,25 @@
-<script setup>
-const { locale } = useI18n();
+<script setup lang="ts">
+definePageMeta({
+  middleware: ['protected'],
+});
 
-const { $client } = useNuxtApp();
+const user = useAuthenticatedUser();
 
-const { data } = await $client.hello.useQuery({});
-
-const { counter, reset, pause, resume } = useInterval(200, { controls: true });
+async function logout() {
+  await $fetch('/api/logout', {
+    method: 'POST',
+  });
+  await navigateTo('/login');
+}
 </script>
 
 <template>
-  <NuxtLink to="/">Home</NuxtLink>
-  <p>About</p>
-  <form>
-    <select v-model="locale">
-      <option value="en">en</option>
-      <option value="pt-br">pt-br</option>
-    </select>
-    <p>{{ $t("welcome") }}</p>
+  <p>about</p>
+  <h1>Hi, {{ user.email }}!</h1>
+  <p>Your user ID is {{ user.id }}.</p>
+  <form @submit.prevent="logout">
+    <button>Sign out</button>
   </form>
-
-  <p>{{ data?.greeting }}</p>
-
-  <p>{{ counter }}</p>
-  <Button @click="reset">Reset</Button>
-  <Button @click="pause">Pause</Button>
-  <Button @click="resume">Resume</Button>
-
-  <NuxtImg src="/monkey.jpg" width="300px" height="300px" />
 </template>
+
+<style></style>

@@ -6,8 +6,14 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+  experimental: {
+    typedPages: true,
+  },
   nitro: {
     preset: 'bun',
+    debug: true,
+    dev: true,
+    logLevel: 5,
   },
   modules: [
     '@nuxtjs/tailwindcss',
@@ -19,17 +25,9 @@ export default defineNuxtConfig({
     'nuxt-security',
     '@nuxtjs/i18n',
     '@nuxt/image',
+    '@vue-email/nuxt',
   ],
-  build: {
-    transpile: ['trpc-nuxt'],
-  },
-  app: {
-    head: {
-      bodyAttrs: {
-        class: 'min-h-screen bg-background font-sans antialiased',
-      },
-    },
-  },
+  app: {},
   css: ['./assets/css/tailwind.css'],
   postcss: {
     plugins: {
@@ -69,6 +67,21 @@ export default defineNuxtConfig({
     },
   },
   i18n: {
-    vueI18n: './i18n.config.ts', // if you are using custom path, default
+    locales: [
+      {
+        code: 'pt-BR',
+        file: 'pt-BR.ts',
+      },
+    ],
+    lazy: true,
+    langDir: 'lang',
+    defaultLocale: 'pt-BR',
+  },
+  vueEmail: {
+    useNuxtTailwind: true,
+    emailsDir: './emails',
+    playground: true,
+    baseUrl: 'http://localhost:3000',
+    autoImport: true,
   },
 });

@@ -1,19 +1,11 @@
 <script setup lang="ts">
+import { useFindManyTodo } from '~/lib/hooks';
+
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
-import type { User } from '~/types';
 const route = useRoute();
 
 const { x, y } = useMouse();
-
-const { data: users, pending } = await useFetch<User[]>(
-  'https://jsonplaceholder.typicode.com/users',
-  {
-    lazy: true,
-  }
-);
-
-const { data } = await useFetch('/api/hello');
 
 const validationSchema = toTypedSchema(
   z.object({
@@ -38,17 +30,28 @@ const { value: password } = useField('password');
 const onSubmit = handleSubmit((values) => {
   console.log(JSON.stringify(values, null, 2));
 });
+
+const { data: todos, isLoading } = useFindManyTodo({
+  where: {
+    title: 'test',
+  },
+});
 </script>
 
 <template>
   <div>
-    <NuxtLink to="/about">About</NuxtLink>
-
     <h1 class="text-red-500">Nuxt Routing set up successfully!</h1>
     <p>Current route: {{ route.path }}</p>
     <a href="https://nuxt.com/docs/getting-started/routing" target="_blank">
       Learn more about Nuxt Routing
     </a>
+
+    <NuxtLink to="/about">About</NuxtLink>
+
+    <p v-if="isLoading">Loading todos ...</p>
+    <div v-else>
+      {{ JSON.stringify(todos) }}
+    </div>
 
     <form @submit="onSubmit">
       <FormField v-slot="{ componentField }" name="email">
@@ -93,24 +96,6 @@ const onSubmit = handleSubmit((values) => {
     </AlertDialog>
 
     <div>pos: {{ x }}, {{ y }}</div>
-    <p>{{ data?.a }}</p>
-
-    <ClientOnly fallback-tag="span" fallback="Loading Map...">
-      <Map />
-    </ClientOnly>
-
-    <ClientOnly fallback-tag="span" fallback="Loading Map...">
-      <MapGL />
-    </ClientOnly>
-
-    <ClientOnly>
-      <Other />
-    </ClientOnly>
-
-    <div v-if="pending">Loading Users ...</div>
-    <div v-else>
-      <div v-for="user in users" :key="user?.id">Name: {{ user?.name }}</div>
-    </div>
   </div>
 </template>
 
