@@ -98,11 +98,3 @@ const { data: todos, isLoading } = useFindManyTodo({
     <div>pos: {{ x }}, {{ y }}</div>
   </div>
 </template>
-
-<style scoped>
-div {
-  font-family: 'Madimi One', sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-</style>
