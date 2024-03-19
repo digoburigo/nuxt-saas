@@ -1,6 +1,6 @@
 import { Argon2id } from 'oslo/password';
 
-import { prisma } from '../prisma';
+import { prisma } from '../../prisma';
 
 export default defineEventHandler(async (event) => {
   const formData = await readFormData(event);

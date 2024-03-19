@@ -11,9 +11,9 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: 'bun',
-    debug: true,
-    dev: true,
-    logLevel: 5,
+    // debug: true,
+    // dev: true,
+    // logLevel: 5,
   },
   modules: [
     '@nuxtjs/tailwindcss',
@@ -28,7 +28,6 @@ export default defineNuxtConfig({
     '@vue-email/nuxt',
     'nuxt-icon',
   ],
-  app: {},
   css: ['./assets/css/tailwind.css'],
   postcss: {
     plugins: {

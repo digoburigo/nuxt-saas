@@ -31,7 +31,7 @@ const onSubmit = handleSubmit(async (values) => {
   formData.append('firstName', values.firstName);
   formData.append('lastName', values.lastName);
   try {
-    await $fetch('/api/signup', {
+    await $fetch('/api/auth/signup', {
       method: 'POST',
       body: formData,
     });
@@ -47,9 +47,9 @@ const onSubmit = handleSubmit(async (values) => {
 <template>
   <form
     method="post"
-    action="/api/signup"
+    action="/api/auth/signup"
     @submit="onSubmit"
-    class="flex flex-col gap-4"
+    class="space-y-3"
   >
     <FormField v-slot="{ componentField }" name="firstName">
       <FormItem>

@@ -2,7 +2,7 @@
 const user = useAuthenticatedUser();
 
 async function logout() {
-  await $fetch('/api/logout', {
+  await $fetch('/api/auth/logout', {
     method: 'POST',
   });
   await navigateTo('/login');
