@@ -5,7 +5,7 @@
 
 datasource db {
     provider = "sqlite"
-    url = "file:./dev.db"
+    url = "file:/Users/rodrigoburigo/Documents/Projects/JavaScript/nuxt-app/prisma/dev.db"
 }
 
 generator client {

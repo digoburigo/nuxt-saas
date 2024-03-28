@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useFindManyTodo } from '~/lib/hooks';
+import { useFindManyTodo } from "~/lib/hooks";
 
-import { toTypedSchema } from '@vee-validate/zod';
-import * as z from 'zod';
+import { toTypedSchema } from "@vee-validate/zod";
+import * as z from "zod";
 const route = useRoute();
 
 const { x, y } = useMouse();
@@ -11,29 +11,29 @@ const validationSchema = toTypedSchema(
   z.object({
     email: z
       .string()
-      .min(1, { message: 'Email is required' })
-      .email({ message: 'Must be a valid email' }),
+      .min(1, { message: "Email is required" })
+      .email({ message: "Must be a valid email" }),
     password: z
       .string()
-      .min(1, { message: 'Password is required' })
-      .min(8, { message: 'Too short' }),
-  })
+      .min(1, { message: "Password is required" })
+      .min(8, { message: "Too short" }),
+  }),
 );
 
 const { handleSubmit, errors, values } = useForm({
   validationSchema,
 });
 
-const { value: email } = useField('email');
-const { value: password } = useField('password');
+const { value: email } = useField("email");
+const { value: password } = useField("password");
 
 const onSubmit = handleSubmit((values) => {
   console.log(JSON.stringify(values, null, 2));
 });
 
-const { data: todos, isLoading } = useFindManyTodo({
+const { data: todos } = useFindManyTodo({
   where: {
-    title: 'test',
+    title: "test",
   },
 });
 </script>
@@ -74,7 +74,7 @@ const { data: todos, isLoading } = useFindManyTodo({
       </FormField>
       <Button type="submit" class="bg-red-500"> Submit </Button>
     </form>
-    <pre>values: {{ values }}</pre>
+    <pre>values: {{ v }}</pre>
 
     <AlertDialog>
       <AlertDialogTrigger>
