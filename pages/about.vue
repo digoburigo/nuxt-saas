@@ -5,6 +5,8 @@ definePageMeta({
 });
 
 const user = useAuthenticatedUser();
+
+const { x, y } = useMouse();
 </script>
 
 <template>
