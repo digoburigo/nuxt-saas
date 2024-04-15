@@ -10,7 +10,10 @@ export default defineNuxtConfig({
     typedPages: true,
   },
   nitro: {
-    preset: 'bun',
+    // preset: 'bun',
+    prerender: {
+      autoSubfolderIndex: false,
+    },
     // debug: true,
     // dev: true,
     // logLevel: 5,
