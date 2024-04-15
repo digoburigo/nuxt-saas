@@ -1,4 +1,5 @@
-import { Argon2id } from 'oslo/password';
+import { Scrypt } from 'lucia';
+
 import { prisma } from '../../prisma';
 
 export default defineEventHandler(async (event) => {
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const hashedPassword = await new Argon2id().hash(password);
+  const hashedPassword = await new Scrypt().hash(password);
 
   try {
     const firstName = formData.get('firstName')?.toString() ?? 'john';

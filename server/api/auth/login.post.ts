@@ -1,4 +1,4 @@
-import { Argon2id } from 'oslo/password';
+import { Scrypt } from 'lucia';
 
 import { prisma } from '../../prisma';
 
@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const validPassword = await new Argon2id().verify(
+  const validPassword = await new Scrypt().verify(
     existingUser.password,
     password
   );
