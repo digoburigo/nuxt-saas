@@ -50,7 +50,7 @@
     "tailwindcss-animate": "^1.0.7",
     "v-calendar": "2.4.2",
     "vee-validate": "^4.12.6",
-    "vue": "^3.4.21",
+    "vue": "^3.4.22",
     "vue-router": "^4.3.0",
     "vue-sonner": "^1.1.2",
     "zod": "^3.22.4"
