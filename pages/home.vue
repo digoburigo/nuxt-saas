@@ -31,7 +31,7 @@ const onSubmit = handleSubmit((values) => {
   console.log(JSON.stringify(values, null, 2));
 });
 
-const { data: todos } = useFindManyTodo({
+const { data: todos, isLoading } = useFindManyTodo({
   where: {
     title: 'test',
   },
