@@ -4,12 +4,14 @@
  * A sample data source using local sqlite db.
  */
 datasource db {
-    provider = 'sqlite'
-    url = 'file:/Users/rodrigoburigo/Documents/Projects/JavaScript/nuxt-app/prisma/dev.db'
+
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
     provider = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
 }
 
 plugin hooks {
@@ -22,16 +24,16 @@ plugin hooks {
  * User model
  */
 model User {
-    id String @id @default(cuid())
+    id        String    @id @default(cuid())
     firstName String?
-    lastName String?
-    name String?
-    email String @unique @email
-    password String @password @omit @length(8, 16)
-    posts Post[]
+    lastName  String?
+    name      String?
+    email     String    @unique @email
+    password  String    @password @omit @length(8, 16)
+    posts     Post[]
 
     // lucia-auth
-    sessions Session[]
+    sessions  Session[]
 
     // everybody can signup
     @@allow('create', true)
@@ -46,14 +48,14 @@ model User {
  * Post model
  */
 model Post {
-    id String @id @default(cuid())
+    id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    title String @length(1, 256)
-    content String
-    published Boolean @default(false)
-    author User @relation(fields: [authorId], references: [id])
-    authorId String
+    title     String   @length(1, 256)
+    content   String
+    published Boolean  @default(false)
+    author    User     @relation(fields: [authorId], references: [id])
+    authorId  String
 
     // allow read for all signin users
     @@allow('read', auth() != null && published)
@@ -63,20 +65,20 @@ model Post {
 }
 
 model Todo {
-    id String @id @default(cuid())
+    id        String   @id @default(cuid())
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    title String
-    completed Boolean @default(false)
+    title     String
+    completed Boolean  @default(false)
 }
 
 
 model Session {
-    id String @id @default(cuid())
+    id        String   @id @default(cuid())
     expiresAt DateTime
 
-    user User @relation(references: [id], fields: [userId], onDelete: Cascade)
-    userId String
+    user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+    userId    String
 
     //   @@allow('all', user == auth())
 }

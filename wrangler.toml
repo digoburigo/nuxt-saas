@@ -1,0 +1,9 @@
+name = "prisma-cloudflare-worker-example"
+main = "src/index.ts"
+compatibility_date = "2024-03-20"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "teste" # to be replaced
+database_id = "14cab968-ce03-4ef2-9c3f-f9f2a1fee851"     # to be replaced
