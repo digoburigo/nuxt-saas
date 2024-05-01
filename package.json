@@ -25,14 +25,14 @@
     "@nuxt/image": "^1.6.0",
     "@prisma/adapter-d1": "^5.13.0",
     "@prisma/client": "^5.13.0",
-    "@tanstack/vue-query": "^5.32.0",
+    "@tanstack/vue-query": "^5.32.1",
     "@tanstack/vue-table": "^8.16.0",
     "@vee-validate/nuxt": "^4.12.6",
     "@vee-validate/zod": "^4.12.6",
     "@vue-email/compiler": "^0.8.14",
     "@vue-email/nuxt": "^0.8.19",
-    "@zenstackhq/runtime": "2.0.1",
-    "@zenstackhq/server": "2.0.1",
+    "@zenstackhq/runtime": "2.0.2",
+    "@zenstackhq/server": "2.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "embla-carousel": "^8.0.2",
@@ -64,7 +64,7 @@
     "@types/nodemailer": "^6.4.14",
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "10.9.0",
-    "@zenstackhq/tanstack-query": "2.0.1",
+    "@zenstackhq/tanstack-query": "2.0.2",
     "autoprefixer": "^10.4.19",
     "npm-check-updates": "^16.14.20",
     "nuxt-security": "^1.4.3",
@@ -73,13 +73,13 @@
     "shadcn-nuxt": "^0.10.4",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",
-    "wrangler": "^3.52.0",
-    "zenstack": "2.0.1"
+    "wrangler": "^3.53.0",
+    "zenstack": "2.0.2"
   },
   "overrides": {
-    "@zenstackhq/runtime": "2.0.1",
-    "@zenstackhq/server": "2.0.1",
-    "@zenstackhq/tanstack-query": "2.0.1",
-    "zenstack": "2.0.1"
+    "@zenstackhq/runtime": "2.0.2",
+    "@zenstackhq/server": "2.0.2",
+    "@zenstackhq/tanstack-query": "2.0.2",
+    "zenstack": "2.0.2"
   }
 }
