@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useFindManyTodo } from '~/lib/hooks';
 
-import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
 const route = useRoute();
 
@@ -11,11 +10,11 @@ const validationSchema = toTypedSchema(
   z.object({
     email: z
       .string()
-      .min(1, { message: 'Email is required' })
+      .min(1, { message: 'This is required' })
       .email({ message: 'Must be a valid email' }),
     password: z
       .string()
-      .min(1, { message: 'Password is required' })
+      .min(1, { message: 'This is required' })
       .min(8, { message: 'Too short' }),
   })
 );
@@ -54,7 +53,7 @@ const { data: todos, isLoading } = useFindManyTodo({
     </div>
 
     <form @submit="onSubmit">
-      <FormField v-slot="{ componentField }" name="email">
+      <FormField v-slot="{ componentField }" name="">
         <FormItem>
           <FormLabel>Email</FormLabel>
           <FormControl>
