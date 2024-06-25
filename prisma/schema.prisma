@@ -4,57 +4,65 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 datasource db {
-    provider = "sqlite"
-    url = "file:/Users/rodrigoburigo/Documents/Projects/JavaScript/nuxt-app/prisma/dev.db"
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
-    provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 /// @@allow('create', true)
-/// @@allow('read', true)
 /// @@allow('all', auth() == this)
 model User {
-    id String @id() @default(cuid())
-    firstName String?
-    lastName String?
-    name String?
-    /// @email
-    email String @unique()
-    /// @password
-    /// @omit
-    /// @length(8, 16)
-    password String
-    posts Post[]
-    sessions Session[]
-}
-
-/// @@allow('read', auth() != null && published)
-/// @@allow('all', author == auth())
-model Post {
-    id String @id() @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt()
-    /// @length(1, 256)
-    title String
-    content String
-    published Boolean @default(false)
-    author User @relation(fields: [authorId], references: [id])
-    authorId String
-}
-
-model Todo {
-    id String @id() @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt()
-    title String
-    completed Boolean @default(false)
+  id        String    @id() @default(nanoid())
+  firstName String?
+  lastName  String?
+  name      String?
+  /// @email
+  email     String    @unique()
+  /// @password
+  /// @omit
+  /// @length(8, 16)
+  password  String
+  sessions  Session[]
+  accounts  Account[]
+  tokens    Token[]
 }
 
 model Session {
-    id String @id() @default(cuid())
-    expiresAt DateTime
-    user User @relation(references: [id], fields: [userId], onDelete: Cascade)
-    userId String
+  id        String   @id() @default(nanoid())
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  userId    String
+}
+
+model Account {
+  id                String  @id() @default(nanoid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Token {
+  id        String   @id() @default(nanoid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  expiresAt DateTime
+  token     String
+  /// @email
+  sentTo    String
 }

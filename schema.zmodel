@@ -4,7 +4,6 @@
  * A sample data source using local sqlite db.
  */
 datasource db {
-
     provider = "sqlite"
     url      = env("DATABASE_URL")
 }
@@ -24,62 +23,67 @@ plugin hooks {
  * User model
  */
 model User {
-    id        String    @id @default(cuid())
+    id        String    @id @default(nanoid())
     firstName String?
     lastName  String?
     name      String?
     email     String    @unique @email
     password  String    @password @omit @length(8, 16)
-    posts     Post[]
 
+    // auth
     // lucia-auth
-    sessions  Session[]
+    sessions      Session[]
+    accounts      Account[]
+    tokens        Token[]
 
     // everybody can signup
     @@allow('create', true)
-
-    @@allow('read', true)
 
     // full access by self
     @@allow('all', auth() == this)
 }
 
-/**
- * Post model
- */
-model Post {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    title     String   @length(1, 256)
-    content   String
-    published Boolean  @default(false)
-    author    User     @relation(fields: [authorId], references: [id])
-    authorId  String
-
-    // allow read for all signin users
-    @@allow('read', auth() != null && published)
-
-    // full access by author
-    @@allow('all', author == auth())
-}
-
-model Todo {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    title     String
-    completed Boolean  @default(false)
-}
-
-
 model Session {
-    id        String   @id @default(cuid())
+    id        String   @id @default(nanoid())
     expiresAt DateTime
 
     user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
     userId    String
-
-    //   @@allow('all', user == auth())
 }
 
+
+
+model Account {
+  id                 String  @id @default(nanoid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+// enum TokenType {
+//     RESET_PASSWORD
+//     VERIFY_EMAIL
+//     TEAM_INVITE
+// }
+
+model Token {
+    id          String   @id @default(nanoid())
+    userId      String
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    type        String
+    expiresAt   DateTime
+    token       String
+    sentTo      String @email
+}

@@ -1,12 +1,11 @@
 <script setup lang="ts">
-definePageMeta({
-  middleware: ['protected'],
-  layout: 'dashboard',
-});
+  definePageMeta({
+    middleware: ["protected"],
+    layout: "dashboard",
+  });
 
-const user = useAuthenticatedUser();
-
-const { x, y } = useMouse();
+  const user = useAuthenticatedUser();
+  const { x, y } = useMouse();
 </script>
 
 <template>

@@ -1,12 +1,15 @@
-# docker-compose.yml
-version: '3.8'
-
 services:
   app:
     platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
-    # expose the right ports
+    environment:
+      - SMTP_HOST="smtp.gmail.com"
+      - SMTP_PORT="465"
+      - SMTP_USER="rodrigobesmeraldino@gmail.com"
+      - SMTP_PASSWORD="oggm naqu vtgl mqbu"
+      - SMTP_FROM_EMAIL="rodrigobesmeraldino@gmail.com"
+      - DATABASE_URL="file:./db.sqlite"
     ports:
       - '3000:3000'

@@ -1,24 +1,24 @@
-import { Scrypt } from 'lucia';
+import { Argon2id } from "oslo/password";
 
-import { prisma } from '../../prisma';
+import { prisma } from "../../prisma";
 
 export default defineEventHandler(async (event) => {
   const formData = await readFormData(event);
-  const email = formData.get('email');
-  if (typeof email !== 'string' || email.length < 3) {
+  const email = formData.get("email");
+  if (typeof email !== "string" || email.length < 3) {
     throw createError({
-      message: 'Invalid email',
+      message: "Invalid email",
       statusCode: 400,
     });
   }
-  const password = formData.get('password');
+  const password = formData.get("password");
   if (
-    typeof password !== 'string' ||
+    typeof password !== "string" ||
     password.length < 6 ||
     password.length > 255
   ) {
     throw createError({
-      message: 'Invalid password',
+      message: "Invalid password",
       statusCode: 400,
     });
   }
@@ -31,18 +31,19 @@ export default defineEventHandler(async (event) => {
 
   if (!existingUser) {
     throw createError({
-      message: 'Incorrect username or password',
+      message: "Algum erro ocorreu. Tente novamente.",
       statusCode: 400,
     });
   }
 
-  const validPassword = await new Scrypt().verify(
+  const validPassword = await new Argon2id().verify(
     existingUser.password,
-    password
+    password,
   );
+
   if (!validPassword) {
     throw createError({
-      message: 'Incorrect username or password',
+      message: "Algum erro ocorreu. Tente novamente.",
       statusCode: 400,
     });
   }
@@ -50,7 +51,7 @@ export default defineEventHandler(async (event) => {
   const session = await lucia.createSession(existingUser.id, {});
   appendHeader(
     event,
-    'Set-Cookie',
-    lucia.createSessionCookie(session.id).serialize()
+    "Set-Cookie",
+    lucia.createSessionCookie(session.id).serialize(),
   );
 });

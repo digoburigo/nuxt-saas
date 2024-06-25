@@ -1,40 +1,34 @@
 <script setup lang="ts">
-import { useFindManyTodo } from '~/lib/hooks';
 
-import * as z from 'zod';
-const route = useRoute();
+  import * as z from 'zod';
+  const route = useRoute();
 
-const { x, y } = useMouse();
+  const { x, y } = useMouse();
 
-const validationSchema = toTypedSchema(
-  z.object({
-    email: z
-      .string()
-      .min(1, { message: 'This is required' })
-      .email({ message: 'Must be a valid email' }),
-    password: z
-      .string()
-      .min(1, { message: 'This is required' })
-      .min(8, { message: 'Too short' }),
-  })
-);
+  const validationSchema = toTypedSchema(
+    z.object({
+      email: z
+        .string()
+        .min(1, { message: 'This is required' })
+        .email({ message: 'Must be a valid email' }),
+      password: z
+        .string()
+        .min(1, { message: 'This is required' })
+        .min(8, { message: 'Too short' }),
+    })
+  );
 
-const { handleSubmit, errors, values } = useForm({
-  validationSchema,
-});
+  const { handleSubmit, errors, values } = useForm({
+    validationSchema,
+  });
 
-const { value: email } = useField('email');
-const { value: password } = useField('password');
+  const { value: email } = useField('email');
+  const { value: password } = useField('password');
 
-const onSubmit = handleSubmit((values) => {
-  console.log(JSON.stringify(values, null, 2));
-});
+  const onSubmit = handleSubmit((values) => {
+    console.log(JSON.stringify(values, null, 2));
+  });
 
-const { data: todos, isLoading } = useFindManyTodo({
-  where: {
-    title: 'test',
-  },
-});
 </script>
 
 <template>
@@ -46,11 +40,6 @@ const { data: todos, isLoading } = useFindManyTodo({
     </a>
 
     <NuxtLink to="/about">About</NuxtLink>
-
-    <p v-if="isLoading">Loading todos ...</p>
-    <div v-else>
-      {{ JSON.stringify(todos) }}
-    </div>
 
     <form @submit="onSubmit">
       <FormField v-slot="{ componentField }" name="">
@@ -73,7 +62,7 @@ const { data: todos, isLoading } = useFindManyTodo({
       </FormField>
       <Button type="submit" class="bg-red-500"> Submit </Button>
     </form>
-    <pre>values: {{ v }}</pre>
+    <pre>values: {{ values }}</pre>
 
     <AlertDialog>
       <AlertDialogTrigger>

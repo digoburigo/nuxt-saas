@@ -1,36 +1,31 @@
-<script setup lang="ts">
-definePageMeta({
-  layout: 'auth',
-});
-</script>
-
 <template>
-  <div class="flex flex-col space-y-2 text-center">
-    <h1 class="text-2xl font-semibold tracking-tight">
-      {{ $t('signup.account.create') }}
-    </h1>
-    <p class="text-sm text-muted-foreground">
-      {{ $t('signup.account.info') }}
-    </p>
+  <div class="w-screen h-screen flex flex-col justify-center">
+    <Card class="mx-auto max-w-sm">
+      <CardHeader>
+        <CardTitle class="text-xl">
+          Cadastro
+        </CardTitle>
+        <CardDescription>
+          Entre com suas informações para criar uma conta
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div class="grid gap-4">
+          <AuthSignupForm />
+          <Separator />
+          <Button variant="outline" class="w-full">
+            Cadastrar com Google
+          </Button>
+        </div>
+        <div class="mt-8 text-center text-sm">
+          <p>Já tem uma conta?</p>
+          <Button as-child variant="link">
+            <NuxtLink to="/auth/login">
+              Entre aqui
+            </NuxtLink>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   </div>
-  <AuthSignupForm />
-  <p class="px-8 text-sm text-center text-muted-foreground">
-    Ao criar a sua conta, você concorda com os
-    <NuxtLink
-      to="/terms"
-      class="underline underline-offset-4 hover:text-primary"
-    >
-      Termos de Serviço
-    </NuxtLink>
-    e
-    <NuxtLink
-      to="/privacy"
-      class="underline underline-offset-4 hover:text-primary"
-    >
-      Políticas de Privacidade
-    </NuxtLink>
-  </p>
-  <Button asChild variant="link">
-    <NuxtLink to="/login">Já possui conta?</NuxtLink>
-  </Button>
 </template>
