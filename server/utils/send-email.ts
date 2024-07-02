@@ -1,16 +1,16 @@
-import { useCompiler } from "#vue-email";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
+import { render } from '@vue-email/render';
 
 type Props = {
-  emailTemplate: string;
+  emailTemplate: any;
   props: any;
   to: string;
   subject: string;
 };
 
 export async function sendEmail({ emailTemplate, props, to, subject }: Props) {
-  const template = await useCompiler(emailTemplate, {
+  const html = await render(emailTemplate, {
     props
   });
 
@@ -35,7 +35,7 @@ export async function sendEmail({ emailTemplate, props, to, subject }: Props) {
     from: process.env.SMTP_FROM_EMAIL || "rodrigobesmeraldino@gmail.com",
     to,
     subject,
-    html: template.html,
+    html,
   };
 
   await transporter.sendMail(options);

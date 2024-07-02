@@ -3,7 +3,9 @@ import { TimeSpan, createDate } from 'oslo';
 import { prisma } from '~/server/prisma';
 import { forgotPasswordSchema } from '~/validators';
 import { sendEmail } from '~/server/utils/send-email';
+import EmailForgotPassword from '~/emails/EmailForgotPassword.vue';
 
+type EmailForgotPasswordProps = Omit<InstanceType<typeof EmailForgotPassword>, `$${string}`>
 
 export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, body => forgotPasswordSchema.safeParse(body))
@@ -13,7 +15,7 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const user = await prisma.user.findFirst({
+    const user = await prisma.user.findUnique({
       where: { email: result.data.email },
     });
 
@@ -36,11 +38,11 @@ export default defineEventHandler(async (event) => {
       await sendEmail({
         to: result.data.email,
         subject: 'Recuperar senha',
-        emailTemplate: 'EmailForgotPassword.vue',
+        emailTemplate: EmailForgotPassword,
         props: {
           token,
           email: result.data.email,
-        },
+        } satisfies EmailForgotPasswordProps,
       });
     } else {
       await new Promise((resolve) => setTimeout(resolve, 750));

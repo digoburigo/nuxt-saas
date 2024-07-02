@@ -1,11 +1,15 @@
-// import { PrismaD1 } from '@prisma/adapter-d1';
 import { PrismaClient } from '@prisma/client';
+import { PrismaLibSQL } from "@prisma/adapter-libsql";
+import { createClient } from "@libsql/client";
 
-// export interface Env {
-//   DB: D1Database;
-// }
+const libsql = createClient({
+  url: `${process.env.TURSO_DATABASE_URL}`,
+  authToken: `${process.env.TURSO_AUTH_TOKEN}`,
+});
 
-// const adapter = new PrismaD1(env.DB);
+const adapter = new PrismaLibSQL(libsql);
+const prismaTurso = new PrismaClient({ adapter })
 
-// export const prisma = new PrismaClient({ adapter });
-export const prisma = new PrismaClient();
+const prismaLocal = new PrismaClient();
+
+export const prisma = process.env.NODE_ENV === 'production' ? prismaTurso : prismaLocal;

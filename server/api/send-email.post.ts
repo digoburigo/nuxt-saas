@@ -1,13 +1,13 @@
-import { useCompiler } from "#vue-email";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
+import EmailWelcome from '~/emails/EmailWelcome.vue';
+import { render } from '@vue-email/render';
+
 export default defineEventHandler(async (event) => {
   try {
-    const template = await useCompiler("EmailWelcome.vue", {
-      props: {
-        invitedByEmail: "<EMAIL>",
-      },
+    const html = await render(EmailWelcome, {
+      invitedByEmail: "<EMAIL>",
     });
 
     const smtpOptions: SMTPTransport.Options = {
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
       from: "rodrigobesmeraldino@gmail.com",
       to: "rodrigobesmeraldino@gmail.com",
       subject: "hello world",
-      html: template.html,
+      html,
     };
 
     await transporter.sendMail(options);

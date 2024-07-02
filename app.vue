@@ -1,11 +1,13 @@
 <script setup lang="ts">
   import { provideHooksContext } from './lib/hooks';
+  const runtimeConfig = useRuntimeConfig()
+
   // import { configure } from 'vee-validate';
 
   // Provide tanstack-query context
   // Use an absolute endpoint so server-side fetch works too
   provideHooksContext({
-    endpoint: 'http://localhost:3000/api/model',
+    endpoint: `${runtimeConfig.public.baseUrl}/api/model`,
   });
 
   // configure({

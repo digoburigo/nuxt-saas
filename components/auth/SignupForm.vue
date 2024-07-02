@@ -4,10 +4,12 @@
   const error = ref<string | null>(null);
   const isLoading = ref(false);
 
+  const { $client } = useNuxtApp();
+
   const validationSchema = toTypedSchema(
     z.object({
       firstName: z.string({ required_error: 'Nome é obrigatório' }),
-      lastName: z.string().optional(),
+      lastName: z.string(),
       email: z
         .string({ required_error: 'Email é obrigatório' })
         .email({ message: 'Email inválido' }),
@@ -26,31 +28,23 @@
     validationSchema,
   });
 
+
+  const registerUser = $client.auth.register.useMutation();
+
   const onSubmit = handleSubmit(async (values) => {
-    isLoading.value = true;
-    const formData = new FormData();
-    formData.append('email', values.email);
-    formData.append('password', values.password);
-    formData.append('firstName', values.firstName);
-    if (values.lastName) {
-      formData.append('lastName', values.lastName);
-    }
-    try {
-      await $fetch('/api/auth/signup', {
-        method: 'POST',
-        body: formData,
+      console.log(`values:`, values);
+      await registerUser.mutate({
+        email: values.email,
+        password: values.password,
+        firstName: values.firstName,
+        lastName: values.lastName,
       });
-      await navigateTo('/about');
-    } catch (err) {
-      error.value = (err as any).data?.message ?? null;
-    } finally {
-      isLoading.value = false;
-    }
   });
 </script>
 
 <template>
-  <form method="post" action="/api/auth/signup" @submit="onSubmit" class="space-y-3">
+  <form class="space-y-3" @submit="onSubmit">
+    <!-- <Form v-slot="{ values }"  @submit="onSubmit"> -->
     <div class="grid grid-cols-2 gap-4">
       <FormField v-slot="{ componentField }" name="firstName">
         <FormItem>
@@ -106,5 +100,7 @@
       {{ $t('signup.account.form.confirm') }}
     </Button>
     <p>{{ error }}</p>
+    <p>{{ registerUser.status }}</p>
+  <!-- </Form> -->
   </form>
 </template>
