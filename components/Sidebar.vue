@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils';
+import { cn } from '~~/lib/utils';
 import { ref } from 'vue';
 
 const navigation = [
@@ -181,7 +181,7 @@ const sidebarOpen = ref(false);
           class="h-8 w-8 rounded-full bg-gray-50"
           src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
           alt=""
-        />
+        >
       </a>
     </div>
 
@@ -278,13 +278,13 @@ const sidebarOpen = ref(false);
               <ul role="list" class="-mx-2 space-y-1">
                 <li v-for="item in navigation" :key="item.name">
                   <Button
-                    asChild
+                    as-child
                     variant="ghost"
                     class="flex justify-start gap-x-4 text-sm font-semibold leading-6 w-full"
                   >
                     <NuxtLink
                       :to="item.path"
-                      activeClass="bg-gray-50 text-indigo-600 hover:text-indigo-600"
+                      active-class="bg-gray-50 text-indigo-600 hover:text-indigo-600"
                     >
                       <Icon
                         :is="item.icon"

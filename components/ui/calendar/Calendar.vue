@@ -5,8 +5,8 @@ import type { Calendar } from 'v-calendar'
 import { DatePicker } from 'v-calendar'
 import { computed, nextTick, onMounted, ref, useSlots } from 'vue'
 import { isVCalendarSlot } from '.'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+import { cn } from '~~/lib/utils'
+import { buttonVariants } from '~~/components/ui/button'
 
 /* Extracted from v-calendar */
 type DatePickerModel = DatePickerDate | DatePickerRangeObject

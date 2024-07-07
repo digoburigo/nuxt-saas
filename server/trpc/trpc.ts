@@ -8,7 +8,7 @@
  * @see https://trpc.io/docs/v10/procedures
  */
 import { initTRPC } from '@trpc/server'
-import type { Context } from '~/server/trpc/context'
+import type { Context } from '~~/server/trpc/context'
 import { ZodError } from "zod";
 import SuperJSON from "superjson";
 
@@ -29,5 +29,6 @@ const t = initTRPC.context<Context>().create({
 export const publicProcedure = t.procedure;
 
 export const router = t.router;
+export const mergeTRPCRouters = t.mergeRouters;
 
 export const middleware = t.middleware;

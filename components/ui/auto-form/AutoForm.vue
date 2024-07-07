@@ -7,7 +7,7 @@ import { type ZodObjectOrWrapped, getBaseSchema, getBaseType, getDefaultValueInZ
 import type { Config, ConfigItem, Dependency, Shape } from './interface'
 import AutoFormField from './AutoFormField.vue'
 import { provideDependencies } from './dependencies'
-import { Form } from '@/components/ui/form'
+import { Form } from '~~/components/ui/form'
 
 const props = defineProps<{
   schema: T

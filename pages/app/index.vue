@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { useFindManyToken } from '~/lib/hooks';
+  import { useFindManyToken } from '~~/lib/hooks';
   const { data: tokens } = useFindManyToken();
 
   // se tiver apenas 1 time, redireciona para o time

@@ -1,11 +1,11 @@
-FROM debian:11.6-slim as base
+FROM debian:12-slim as base
 
 WORKDIR /app
 
 RUN apt update
 RUN apt install curl unzip -y
 
-RUN curl https://bun.sh/install | bash
+RUN curl https://bun.sh/install | bash -s "bun-v1.1.18"
 
 # install deps
 FROM base as installer
@@ -20,12 +20,20 @@ RUN /root/.bun/bin/bun install --frozen-lockfile
 # build application
 FROM base as builder
 
+# Install nodejs using n
+ARG NODE_VERSION=20
+RUN curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n \
+    && bash n $NODE_VERSION \
+    && rm n \
+    && npm install -g n
+
 WORKDIR /app
 
 COPY --from=installer /app/node_modules node_modules
 COPY . .
 
-RUN /root/.bun/bin/bun run build
+RUN /root/.bun/bin/bun run zen:generate
+RUN /root/.bun/bin/bun --bun run build
 
 # runtime
 FROM gcr.io/distroless/base
@@ -34,7 +42,6 @@ WORKDIR /app
 
 COPY --from=base /root/.bun/bin/bun bun
 COPY --from=builder /app/.output .
-
 
 ENV NODE_ENV production
 ENV HOST 0.0.0.0

@@ -7,10 +7,10 @@ import type { Config, ConfigItem } from './interface'
 import { beautifyObjectName, getBaseType } from './utils'
 import AutoFormField from './AutoFormField.vue'
 import AutoFormLabel from './AutoFormLabel.vue'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { FormItem, FormMessage } from '@/components/ui/form'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '~~/components/ui/accordion'
+import { Button } from '~~/components/ui/button'
+import { Separator } from '~~/components/ui/separator'
+import { FormItem, FormMessage } from '~~/components/ui/form'
 
 const props = defineProps<{
   fieldName: string

@@ -14,7 +14,7 @@ WORKDIR /app
 
 COPY --from=installer /app/node_modules node_modules
 COPY . .
-RUN npm run db:generate
+RUN npm run zen:generate
 RUN npm run build
 
 FROM gcr.io/distroless/nodejs20-debian12

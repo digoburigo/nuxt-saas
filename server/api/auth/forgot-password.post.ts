@@ -1,8 +1,7 @@
 import { generateId } from 'lucia';
 import { TimeSpan, createDate } from 'oslo';
-import { prisma } from '~/server/prisma';
-import { forgotPasswordSchema } from '~/validators';
-import { sendEmail } from '~/server/utils/send-email';
+import { prisma } from '~~/server/prisma';
+import { sendEmail } from '~~/server/utils/send-email';
 import EmailForgotPassword from '~/emails/EmailForgotPassword.vue';
 
 type EmailForgotPasswordProps = Omit<InstanceType<typeof EmailForgotPassword>, `$${string}`>

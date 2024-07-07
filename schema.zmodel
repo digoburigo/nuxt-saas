@@ -13,11 +13,16 @@ generator client {
     previewFeatures = ["driverAdapters"]
 }
 
-plugin hooks {
-    provider = '@zenstackhq/tanstack-query'
-    target = 'vue'
-    output = 'lib/hooks'
-}   
+// plugin hooks {
+//     provider = '@zenstackhq/tanstack-query'
+//     target = 'vue'
+//     output = 'lib/hooks'
+// }  
+
+plugin trpc {
+  provider = '@zenstackhq/trpc'
+  output = 'server/trpc/routers/generated'
+}
 
 /**
  * User model

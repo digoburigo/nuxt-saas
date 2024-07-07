@@ -62,7 +62,9 @@
             </ERow>
           </ESection>
           <ESection class="text-center mt-[32px] mb-[32px]">
-            <EButton px="20" py="12"
+            <EButton 
+              px="20" 
+              py="12"
               class="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center"
               :href="inviteLink">
               Join the team

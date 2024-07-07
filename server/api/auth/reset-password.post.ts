@@ -1,6 +1,6 @@
 import { Argon2id } from "oslo/password";
 import { z } from "zod";
-import { prisma } from "~/server/prisma";
+import { prisma } from "~~/server/prisma";
 
 const resetPasswordSchema = z.object({
   token: z.string(),

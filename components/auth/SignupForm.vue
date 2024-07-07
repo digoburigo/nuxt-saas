@@ -1,10 +1,9 @@
-<script lang="ts" setup>
+<script setup lang="ts">
   import * as z from 'zod';
 
-  const error = ref<string | null>(null);
-  const isLoading = ref(false);
-
-  const { $client } = useNuxtApp();
+  const router = useRouter();
+  
+  const api = useApi();
 
   const validationSchema = toTypedSchema(
     z.object({
@@ -29,22 +28,25 @@
   });
 
 
-  const registerUser = $client.auth.register.useMutation();
+  const { mutate: registerUser, isPending, isError, error } = api.auth.register.useMutation({
+    onSuccess: () => {
+      router.push('/app');
+    },
+  });
 
   const onSubmit = handleSubmit(async (values) => {
       console.log(`values:`, values);
-      await registerUser.mutate({
+      await registerUser({
         email: values.email,
         password: values.password,
         firstName: values.firstName,
-        lastName: values.lastName,
+        lastName: values.lastName
       });
   });
 </script>
 
 <template>
   <form class="space-y-3" @submit="onSubmit">
-    <!-- <Form v-slot="{ values }"  @submit="onSubmit"> -->
     <div class="grid grid-cols-2 gap-4">
       <FormField v-slot="{ componentField }" name="firstName">
         <FormItem>
@@ -95,12 +97,10 @@
       </FormItem>
     </FormField>
 
-    <Button :disabled="isLoading" type="submit" class="w-full">
-      <Icon v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" aria-hidden="true" name="uil:fidget-spinner" />
+    <Button :disabled="isPending" type="submit" class="w-full">
+      <Icon v-if="isPending" class="w-4 h-4 mr-2 animate-spin" aria-hidden="true" name="uil:fidget-spinner" />
       {{ $t('signup.account.form.confirm') }}
     </Button>
-    <p>{{ error }}</p>
-    <p>{{ registerUser.status }}</p>
-  <!-- </Form> -->
+    <p v-if="isError">{{ error }}</p>
   </form>
 </template>

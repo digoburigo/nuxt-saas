@@ -4,18 +4,18 @@
 
   // import { configure } from 'vee-validate';
 
-  // Provide tanstack-query context
-  // Use an absolute endpoint so server-side fetch works too
-  provideHooksContext({
-    endpoint: `${runtimeConfig.public.baseUrl}/api/model`,
-  });
-
   // configure({
   //   validateOnBlur: true,
   //   validateOnChange: false,
   //   validateOnInput: false,
   //   validateOnModelUpdate: false
   // });
+
+  // Provide tanstack-query context
+  // Use an absolute endpoint so server-side fetch works too
+  provideHooksContext({
+    endpoint: `${runtimeConfig.public.baseUrl}/api/model`,
+  });
 </script>
 
 <template>

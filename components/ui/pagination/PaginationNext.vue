@@ -4,8 +4,8 @@ import { PaginationNext, type PaginationNextProps } from 'radix-vue'
 import { ChevronRight } from 'lucide-vue-next'
 import {
   Button,
-} from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+} from '~~/components/ui/button'
+import { cn } from '~~/lib/utils'
 
 const props = withDefaults(defineProps<PaginationNextProps & { class?: HTMLAttributes['class'] }>(), {
   asChild: true,

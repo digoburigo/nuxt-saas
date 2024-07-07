@@ -1,7 +1,7 @@
 import type { inferAsyncReturnType } from '@trpc/server'
 import { enhance } from '@zenstackhq/runtime';
 import type { H3Event } from 'h3'
-import { prisma } from '~/server/prisma';
+import { prisma } from '~~/server/prisma';
 
 /**
  * Creates context for an incoming request

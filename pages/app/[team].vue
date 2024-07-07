@@ -1,13 +1,14 @@
 <script setup lang="ts">
 
-  // definePageMeta({
-  //   middleware: ["protected"],
-  // });
+// definePageMeta({
+//   middleware: ["protected"],
+// });
 
-  const route = useRoute('app-team___pt-BR');
-
+const route = useRoute('app-team___pt-BR');
 </script>
 
 <template>
-  <p>{{ route.params.team }}</p>
+  <div>
+    <p>{{ route.params.team }}</p>
+  </div>
 </template>

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { router, publicProcedure } from '../trpc';
 import { Argon2id } from 'oslo/password';
-import { lucia } from '~/server/utils/auth';
+import { lucia } from '~~/server/utils/auth';
 
 export const authRouter = router({
   login: publicProcedure

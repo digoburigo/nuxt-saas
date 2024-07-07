@@ -1,14 +1,9 @@
 <script lang="ts" setup>
-  import { forgotPasswordSchema } from '~/validators';
 
   const error = ref<string | null>(null);
   const isLoading = ref(false);
 
-  const { handleSubmit, errors, values } = useForm({
-    validationSchema: toTypedSchema(
-      forgotPasswordSchema
-    ),
-  });
+  const { handleSubmit, errors, values } = useForm();
 
   const onSubmit = handleSubmit(async (values) => {
     isLoading.value = true;
@@ -29,7 +24,7 @@
 </script>
 
 <template>
-  <form method="POST" action="/api/auth/forgot-password" @submit="onSubmit" class="flex flex-col gap-4">
+  <form method="POST" action="/api/auth/forgot-password" class="flex flex-col gap-4" @submit="onSubmit">
     <FormField v-slot="{ componentField }" name="email">
       <FormItem>
         <FormLabel> Email </FormLabel>

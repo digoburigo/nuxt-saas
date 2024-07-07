@@ -2,14 +2,15 @@ import vue from '@vitejs/plugin-vue'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  alias: {
-    '@vue/devtools-api': '@vue/devtools-api',
-  },
+  compatibilityDate: '2024-07-04',
+  // alias: {
+  //   '@vue/devtools-api': '@vue/devtools-api',
+  // },
   devtools: {
     enabled: true,
     timeline: {
       enabled: true,
-    },
+    }
   },
   runtimeConfig: {
     // The private keys which are only available within server-side
@@ -21,19 +22,16 @@ export default defineNuxtConfig({
   experimental: {
     typedPages: true,
   },
-  build: {
-    transpile: ['trpc-nuxt']
-  },
   nitro: {
     // preset: 'cloudflare-pages',
     // preset: process.env.PRESET_NUXT ?? undefined,
-    preset: 'bun',
+    // preset: 'bun',
     prerender: {
       autoSubfolderIndex: false,
     },
-    debug: true,
-    dev: true,
-    logLevel: 5,
+    // debug: true,
+    // dev: true,
+    // logLevel: 5,
     rollupConfig: {
       // @ts-ignore
       plugins: [vue()]
@@ -79,6 +77,7 @@ export default defineNuxtConfig({
     storesDirs: ['./stores/**'],
   },
   security: {
+    csrf: true,
     headers: {
       crossOriginEmbedderPolicy:
         process.env.NODE_ENV === 'production' ? 'require-corp' : 'unsafe-none',
@@ -91,7 +90,7 @@ export default defineNuxtConfig({
           'https://images.unsplash.com',
         ],
         'script-src-attr': ["'unsafe-inline'"],
-        "connect-src": process.env.NODE_ENV === 'production' ? ['self', 'https:'] : undefined,
+        "connect-src": process.env.NODE_ENV === 'production' ? ['self', 'https:', 'http:'] : undefined,
       },
       permissionsPolicy: {
         geolocation: ['self'],
