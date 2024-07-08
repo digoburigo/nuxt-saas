@@ -2,7 +2,15 @@ import vue from '@vitejs/plugin-vue'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-07-04',
+  future: {
+    compatibilityVersion: 4,
+  },
+  compatibilityDate: '2024-07-07',
+  // srcDir: '.',
+  // dir: {
+  //   app: 'app'
+  // },
+  // compatibilityDate: '2024-07-04',
   // alias: {
   //   '@vue/devtools-api': '@vue/devtools-api',
   // },
@@ -71,7 +79,7 @@ export default defineNuxtConfig({
      * Directory that the component lives in.
      * @default "./components/ui"
      */
-    componentDir: './components/ui',
+    componentDir: './app/components/ui',
   },
   pinia: {
     storesDirs: ['./stores/**'],

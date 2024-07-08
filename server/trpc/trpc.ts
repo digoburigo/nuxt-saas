@@ -30,5 +30,6 @@ export const publicProcedure = t.procedure;
 
 export const router = t.router;
 export const mergeTRPCRouters = t.mergeRouters;
+export const createCallerFactory = t.createCallerFactory;
 
 export const middleware = t.middleware;

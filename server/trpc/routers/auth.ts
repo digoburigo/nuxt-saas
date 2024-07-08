@@ -4,6 +4,19 @@ import { Argon2id } from 'oslo/password';
 import { lucia } from '~~/server/utils/auth';
 
 export const authRouter = router({
+  logout: publicProcedure.mutation(async ({ ctx: { event } }) => {
+    if (!event.context.session) {
+      throw createError({
+        statusCode: 403,
+      });
+    }
+    await lucia.invalidateSession(event.context.session.id);
+    appendHeader(
+      event,
+      'Set-Cookie',
+      lucia.createBlankSessionCookie().serialize()
+    );
+  }),
   login: publicProcedure
     .input(z.object({ email: z.string().email(), password: z.string() }))
     .mutation(async ({ ctx: { dbAdmin, event }, input: { email, password } }) => {

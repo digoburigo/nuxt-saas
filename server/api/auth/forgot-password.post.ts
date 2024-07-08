@@ -3,11 +3,16 @@ import { TimeSpan, createDate } from 'oslo';
 import { prisma } from '~~/server/prisma';
 import { sendEmail } from '~~/server/utils/send-email';
 import EmailForgotPassword from '~/emails/EmailForgotPassword.vue';
+import { z } from 'zod';
 
 type EmailForgotPasswordProps = Omit<InstanceType<typeof EmailForgotPassword>, `$${string}`>
 
+const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
 export default defineEventHandler(async (event) => {
-  const result = await readValidatedBody(event, body => forgotPasswordSchema.safeParse(body))
+  const result = await readValidatedBody(event, body => forgotPasswordSchema.safeParse(body));
 
   if (!result.success) {
     throw result.error.issues
