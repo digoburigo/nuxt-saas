@@ -51,7 +51,6 @@ export default defineNuxtConfig({
 		typedPages: true,
 	},
 	nitro: {
-		// preset: "bun",
 		prerender: {
 			autoSubfolderIndex: false,
 		},
@@ -60,9 +59,6 @@ export default defineNuxtConfig({
 				target: "esnext",
 			},
 		},
-		// debug: true,
-		// dev: true,
-		// logLevel: 5,
 		rollupConfig: {
 			// @ts-expect-error @vue-email: type instatiation is possibly infinite
 			plugins: [vue()],
