@@ -13,14 +13,14 @@ import SuperJSON from "superjson";
 import type { Context } from "~~/server/trpc/context";
 
 const t = initTRPC.context<Context>().create({
-  transformer: SuperJSON,
-  errorFormatter: ({ shape, error }) => ({
-    ...shape,
-    data: {
-      ...shape.data,
-      zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
-    },
-  }),
+	transformer: SuperJSON,
+	errorFormatter: ({ shape, error }) => ({
+		...shape,
+		data: {
+			...shape.data,
+			zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
+		},
+	}),
 });
 
 /**
@@ -29,16 +29,16 @@ const t = initTRPC.context<Context>().create({
 export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.event.context.user) {
-    console.log("🚫 User not authenticated");
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.event.context, user: ctx.event.context.user },
-    },
-  });
+	if (!ctx.event.context.user) {
+		console.log("🚫 User not authenticated");
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+	return next({
+		ctx: {
+			// infers the `session` as non-nullable
+			session: { ...ctx.event.context, user: ctx.event.context.user },
+		},
+	});
 });
 
 export const router = t.router;

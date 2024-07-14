@@ -14,12 +14,12 @@ cleanupOutdatedCaches();
 
 let allowlist: undefined | RegExp[];
 if (import.meta.env.DEV)
-  allowlist = [/^\/$/];
+	allowlist = [/^\/$/];
 
 // to allow work offline
 registerRoute(new NavigationRoute(
-  createHandlerBoundToURL("/"),
-  { allowlist },
+	createHandlerBoundToURL("/"),
+	{ allowlist },
 ));
 
 self.skipWaiting();

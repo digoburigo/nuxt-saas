@@ -9,15 +9,15 @@ import { prisma as db } from "~~/server/prisma";
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = (event: H3Event) => {
-  const prisma = enhance(db, {
-    user: event.context.user?.id ? { id: event.context.user?.id } : undefined,
-  });
+	const prisma = enhance(db, {
+		user: event.context.user?.id ? { id: event.context.user?.id } : undefined,
+	});
 
-  return {
-    event,
-    prisma,
-    db,
-  };
+	return {
+		event,
+		prisma,
+		db,
+	};
 };
 
 export type Context = inferAsyncReturnType<typeof createTRPCContext>;

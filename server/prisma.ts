@@ -5,8 +5,8 @@ import { createClient } from "@libsql/client";
 const config = useRuntimeConfig();
 
 const libsql = createClient({
-  url: config.tursoDatabaseUrl,
-  authToken: config.tursoAuthToken,
+	url: config.tursoDatabaseUrl,
+	authToken: config.tursoAuthToken,
 });
 
 const adapter = new PrismaLibSQL(libsql);
