@@ -1,3 +1,3 @@
 export const useApi = () => {
-  return useNuxtApp().$client;
+	return useNuxtApp().$client;
 };

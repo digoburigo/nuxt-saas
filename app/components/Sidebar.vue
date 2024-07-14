@@ -1,35 +1,29 @@
 <script setup lang="ts">
-import { cn } from '~/lib/utils';
-import { ref } from 'vue';
+import { ref } from "vue";
+import { cn } from "~/lib/utils";
 
 const navigation = [
-  { name: 'Dashboard', path: 'dashboard', icon: 'uil:github', current: true },
-  { name: 'About', path: 'about', icon: 'uil:github', current: false },
-];
-
-const teams = [
-  { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-  { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-  { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
+	{ name: "Dashboard", path: "dashboard", icon: "uil:github", current: true },
+	{ name: "About", path: "about", icon: "uil:github", current: false },
 ];
 
 const frameworks = [
-  { value: 'next.js', label: 'Next.js' },
-  { value: 'sveltekit', label: 'SvelteKit' },
-  { value: 'nuxt.js', label: 'Nuxt.js' },
-  { value: 'remix', label: 'Remix' },
-  { value: 'astro', label: 'Astro' },
+	{ value: "next.js", label: "Next.js" },
+	{ value: "sveltekit", label: "SvelteKit" },
+	{ value: "nuxt.js", label: "Nuxt.js" },
+	{ value: "remix", label: "Remix" },
+	{ value: "astro", label: "Astro" },
 ];
 
 const open = ref(false);
-const value = ref('');
+const value = ref("");
 
 const sidebarOpen = ref(false);
 </script>
 
 <template>
-  <div>
-    <!-- <TransitionRoot as="template" :show="sidebarOpen">
+	<div>
+		<!-- <TransitionRoot as="template" :show="sidebarOpen">
       <Dialog
         as="div"
         class="relative z-50 lg:hidden"
@@ -160,143 +154,159 @@ const sidebarOpen = ref(false);
       </Dialog>
     </TransitionRoot> -->
 
-    <!-- MOBILE TOP BAR -->
-    <div
-      class="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden"
-    >
-      <button
-        type="button"
-        class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-        @click="sidebarOpen = true"
-      >
-        <span class="sr-only">Open sidebar</span>
-        <Icon class="h-6 w-6 shrink-0" aria-hidden="true" name="uil:github" />
-      </button>
-      <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">
-        Dashboard
-      </div>
-      <a href="#">
-        <span class="sr-only">Your profile</span>
-        <img
-          class="h-8 w-8 rounded-full bg-gray-50"
-          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-          alt=""
-        >
-      </a>
-    </div>
+		<!-- MOBILE TOP BAR -->
+		<div
+			class="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden"
+		>
+			<button
+				type="button"
+				class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+				@click="sidebarOpen = true"
+			>
+				<span class="sr-only">Open sidebar</span>
+				<Icon
+					class="h-6 w-6 shrink-0"
+					aria-hidden="true"
+					name="uil:github"
+				/>
+			</button>
+			<div class="flex-1 text-sm font-semibold leading-6 text-gray-900">
+				Dashboard
+			</div>
+			<a href="#">
+				<span class="sr-only">Your profile</span>
+				<img
+					class="h-8 w-8 rounded-full bg-gray-50"
+					src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+					alt=""
+				>
+			</a>
+		</div>
 
-    <!-- Static sidebar for desktop -->
-    <div
-      class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col"
-    >
-      <!-- Sidebar component, swap this element with another sidebar if you like -->
-      <div
-        class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6"
-      >
-        <div class="flex h-16 shrink-0 items-center">
-          <Avatar class="mr-4">
-            <AvatarImage
-              src="https://github.com/radix-vue.png"
-              alt="@radix-vue"
-            />
-            <AvatarFallback>B</AvatarFallback>
-          </Avatar>
-          <span class="sr-only">Your profile</span>
-          <span aria-hidden="true">UpDok</span>
-        </div>
-        <nav class="flex flex-1 flex-col">
-          <ul role="list" class="flex flex-1 flex-col gap-y-7">
-            <li>
-              <div class="text-xs font-semibold leading-6 text-gray-400">
-                Time
-              </div>
+		<!-- Static sidebar for desktop -->
+		<div
+			class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col"
+		>
+			<!-- Sidebar component, swap this element with another sidebar if you like -->
+			<div
+				class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6"
+			>
+				<div class="flex h-16 shrink-0 items-center">
+					<Avatar class="mr-4">
+						<AvatarImage
+							src="https://github.com/radix-vue.png"
+							alt="@radix-vue"
+						/>
+						<AvatarFallback>B</AvatarFallback>
+					</Avatar>
+					<span class="sr-only">Your profile</span>
+					<span aria-hidden="true">UpDok</span>
+				</div>
+				<nav class="flex flex-1 flex-col">
+					<ul
+						role="list"
+						class="flex flex-1 flex-col gap-y-7"
+					>
+						<li>
+							<div class="text-xs font-semibold leading-6 text-gray-400">
+								Time
+							</div>
 
-              <Popover v-model:open="open">
-                <PopoverTrigger as-child>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    :aria-expanded="open"
-                    class="w-[200px] justify-between"
-                  >
-                    {{
-                      value
-                        ? frameworks.find(
-                            (framework) => framework.value === value
-                          )?.label
-                        : 'Selecione o time'
-                    }}
-                    <Icon
-                      class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                      aria-hidden="true"
-                      name="uil:github"
-                    />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent class="w-[200px] p-0">
-                  <Command>
-                    <CommandInput class="h-9" placeholder="Procurar time" />
-                    <CommandEmpty>Nenhum time encontrado.</CommandEmpty>
-                    <CommandList>
-                      <CommandGroup>
-                        <CommandItem
-                          v-for="framework in frameworks"
-                          :key="framework.value"
-                          :value="framework.value"
-                          @select="
-                            (ev) => {
-                              if (typeof ev.detail.value === 'string') {
-                                value = ev.detail.value;
-                              }
-                              open = false;
-                            }
-                          "
-                        >
-                          {{ framework.label }}
+							<Popover v-model:open="open">
+								<PopoverTrigger as-child>
+									<Button
+										variant="outline"
+										role="combobox"
+										:aria-expanded="open"
+										class="w-[200px] justify-between"
+									>
+										{{
+											value
+												? frameworks.find(
+													(framework) => framework.value === value,
+												)?.label
+												: 'Selecione o time'
+										}}
+										<Icon
+											class="ml-2 h-4 w-4 shrink-0 opacity-50"
+											aria-hidden="true"
+											name="uil:github"
+										/>
+									</Button>
+								</PopoverTrigger>
+								<PopoverContent class="w-[200px] p-0">
+									<Command>
+										<CommandInput
+											class="h-9"
+											placeholder="Procurar time"
+										/>
+										<CommandEmpty>Nenhum time encontrado.</CommandEmpty>
+										<CommandList>
+											<CommandGroup>
+												<CommandItem
+													v-for="framework in frameworks"
+													:key="framework.value"
+													:value="framework.value"
+													@select="
+														(ev) => {
+															if (typeof ev.detail.value === 'string') {
+																value = ev.detail.value;
+															}
+															open = false;
+														}
+													"
+												>
+													{{ framework.label }}
 
-                          <Icon
-                            :class="
-                              cn(
-                                'ml-auto h-4 w-4',
-                                value === framework.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )
-                            "
-                            aria-hidden="true"
-                            name="uil:github"
-                          />
-                        </CommandItem>
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </li>
+													<Icon
+														:class="
+															cn(
+																'ml-auto h-4 w-4',
+																value === framework.value
+																	? 'opacity-100'
+																	: 'opacity-0',
+															)
+														"
+														aria-hidden="true"
+														name="uil:github"
+													/>
+												</CommandItem>
+											</CommandGroup>
+										</CommandList>
+									</Command>
+								</PopoverContent>
+							</Popover>
+						</li>
 
-            <li>
-              <ul role="list" class="-mx-2 space-y-1">
-                <li v-for="item in navigation" :key="item.name">
-                  <Button
-                    as-child
-                    variant="ghost"
-                    class="flex justify-start gap-x-4 text-sm font-semibold leading-6 w-full"
-                  >
-                    <NuxtLink
-                      :to="item.path"
-                      active-class="bg-gray-50 text-indigo-600 hover:text-indigo-600"
-                    >
-                      <Icon
-                        :is="item.icon"
-                        class="h-6 w-6 shrink-0"
-                        aria-hidden="true"
-                        :name="item.icon"
-                      />
-                      {{ item.name }}
-                    </NuxtLink>
-                  </Button>
+						<li>
+							<ul
+								role="list"
+								class="-mx-2 space-y-1"
+							>
+								<li
+									v-for="item in navigation"
+									:key="item.name"
+								>
+									<Button
+										as-child
+										variant="ghost"
+										class="flex justify-start gap-x-4 text-sm font-semibold leading-6 w-full"
+									>
+										<NuxtLink
+											:to="item.path"
+											active-class="bg-gray-50 text-indigo-600 hover:text-indigo-600"
+										>
+											<Icon
+												:is="item.icon"
+												class="h-6 w-6 shrink-0"
+												aria-hidden="true"
+												:name="item.icon"
+											/>
+											{{ item.name }}
+										</NuxtLink>
+									</Button>
 
-                  <!-- <a
+									<!-- <a
                     :href="item.href"
                     :class="[
                       item.current
@@ -319,16 +329,16 @@ const sidebarOpen = ref(false);
 
                     {{ item.name }}
                   </a> -->
-                </li>
-              </ul>
-            </li>
+								</li>
+							</ul>
+						</li>
 
-            <li class="-mx-6 mt-auto">
-              <UserMenu />
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </div>
-  </div>
+						<li class="-mx-6 mt-auto">
+							<UserMenu />
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
 </template>

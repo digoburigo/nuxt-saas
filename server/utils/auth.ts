@@ -1,8 +1,9 @@
-import { Lucia } from 'lucia';
+import { Lucia } from "lucia";
 
-import { PrismaAdapter } from '@lucia-auth/adapter-prisma';
-import type { User } from '@prisma/client';
-import { prisma } from '../prisma';
+import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
+import type { User } from "@prisma/client";
+import { Google } from "arctic";
+import { prisma } from "../prisma";
 
 const adapter = new PrismaAdapter(prisma.session, prisma.user);
 
@@ -11,7 +12,7 @@ export const lucia = new Lucia(adapter, {
     // IMPORTANT!
     attributes: {
       // set to `true` when using HTTPS
-      secure: !process.dev,
+      secure: !import.meta.dev,
     },
   },
   getUserAttributes: (attributes) => {
@@ -22,9 +23,17 @@ export const lucia = new Lucia(adapter, {
 });
 
 // IMPORTANT!
-declare module 'lucia' {
+declare module "lucia" {
   interface Register {
     Lucia: typeof lucia;
-    DatabaseUserAttributes: Omit<User, 'id'>;
+    DatabaseUserAttributes: Omit<User, "id">;
   }
 }
+
+const config = useRuntimeConfig();
+
+export const google = new Google(
+  config.googleClientId,
+  config.googleClientSecret,
+  config.googleRedirectUri,
+);

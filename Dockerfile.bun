@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apt update
 RUN apt install curl unzip -y
 
-RUN curl https://bun.sh/install | bash -s "bun-v1.1.18"
+RUN curl https://bun.sh/install | bash -s "bun-v1.1.20"
 
 # install deps
 FROM base as installer
@@ -33,6 +33,7 @@ COPY --from=installer /app/node_modules node_modules
 COPY . .
 
 RUN /root/.bun/bin/bun run zen:generate
+RUN /root/.bun/bin/bun run db:generate
 RUN /root/.bun/bin/bun --bun run build
 
 # runtime

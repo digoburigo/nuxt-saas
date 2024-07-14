@@ -1,8 +1,8 @@
 import { createTrpcVueClient, customFetchWrapper } from "@colonel-sandvich/trpc-vue-query";
-import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
+import { createTRPCProxyClient, httpBatchLink, loggerLink } from "@trpc/client";
 import SuperJSON from "superjson";
-import type { AppRouter } from "~~/server/trpc/routers";
 import { useQueryClient } from "@tanstack/vue-query";
+import type { AppRouter } from "~~/server/trpc/routers";
 
 export default defineNuxtPlugin(() => {
   const headers = useRequestHeaders();
@@ -11,6 +11,12 @@ export default defineNuxtPlugin(() => {
   const trpc = createTRPCProxyClient<AppRouter>({
     transformer: SuperJSON,
     links: [
+      loggerLink({
+        enabled: opts =>
+          (import.meta.env.NODE_ENV === "development"
+          && typeof window !== "undefined")
+          || (opts.direction === "down" && opts.result instanceof Error),
+      }),
       httpBatchLink({
         url: "/api/trpc",
         headers() {

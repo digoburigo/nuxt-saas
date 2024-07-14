@@ -13,13 +13,20 @@
         <div class="grid gap-4">
           <AuthSignupForm />
           <Separator />
-          <Button variant="outline" class="w-full">
-            Cadastrar com Google
+          <Button
+            as-child
+            variant="outline"
+            class="w-full"
+          >
+            <a href="/login/google">Cadastrar com Google</a>
           </Button>
         </div>
         <div class="mt-8 text-center text-sm">
           <p>Já tem uma conta?</p>
-          <Button as-child variant="link">
+          <Button
+            as-child
+            variant="link"
+          >
             <NuxtLink to="/auth/login">
               Entre aqui
             </NuxtLink>

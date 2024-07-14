@@ -24,39 +24,276 @@ plugin trpc {
   output = 'server/trpc/routers/generated'
 }
 
-/**
- * User model
- */
+// enum GlobalRole {
+//     USER
+//     CONSULTANT
+//     SUPERUSER
+// }
+
 model User {
-    id        String    @id @default(nanoid())
-    firstName String?
-    lastName  String?
-    name      String?
-    email     String    @unique @email
-    password  String    @password @omit @length(8, 16)
+    id            String    @id @default(nanoid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name          String?
+    firstName     String?
+    lastName      String?
+    email         String    @email @unique
+    emailVerified DateTime?
+    password      String?   @password @omit
+    globalRole    String    @default("USER") // GlobalRole
+    image         String?   @url
 
-    // auth
+    teams TeamUser[]
+    customers Customer[]
+
+    ownedProjects Project[] @relation("OwnedProjects")
+    responsibleProjects Project[] @relation("ResponsibleProjects")
+
+    toNotifications Notification[] @relation("ToUser")
+    fromNotifications Notification[] @relation("FromUser")
+
+    files File[]
+
+    tokens Token[]
+
     // lucia-auth
-    sessions      Session[]
     accounts      Account[]
-    tokens        Token[]
+    sessions      Session[]
 
-    // everybody can signup
+    // can be created by anyone, even not logged in
     @@allow('create', true)
 
-    // full access by self
+    // can be read by users sharing any team
+    @@allow('read', teams?[team.members?[user == auth()]])
+
+    // full access by oneself
     @@allow('all', auth() == this)
+    // @@allow('all', auth() == this || future() == this)
 }
 
-model Session {
-    id        String   @id @default(nanoid())
-    expiresAt DateTime
+model Team {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name String @length(4, 50)
+    slug String @unique
 
-    user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
-    userId    String
+    members TeamUser[]
+    customers Customer[]
+    projects Project[]
+    files File[]
+    notifications Notification[]
+
+    // require login
+    @@deny('all', auth() == null)
+
+    // everyone can create a team
+    @@allow('create', true)
+
+    // any user in the team can read the team
+    @@allow('read', members?[user == auth()])
+
+    // space admin can update and delete
+    @@allow('update', members?[user == auth() && (role == 'OWNER' || role == 'ADMIN')])
+
+    @@allow('delete', members?[user == auth() && role == 'OWNER'])
 }
 
+// enum TeamUserRole {
+//     MEMBER
+//     OWNER
+//     ADMIN
+// }
 
+model TeamUser {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId Int
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId String
+    role String // TeamUserRole
+    @@unique([userId, teamId])
+
+    // require login
+    @@deny('all', auth() == null)
+
+    // team admin can create/update/delete
+    @@allow('create,update,delete', team.members?[user == auth() && role == 'ADMIN'])
+
+    // user can read entries for spaces which he's a member of
+    @@allow('read', team.members?[user == auth()])
+}
+
+// enum CustomerDocumentType {
+//     CPF
+//     CNPJ
+// }
+
+model Customer {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId Int
+    owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    ownerId String
+    slug String @unique
+
+    name String
+    documentType String // CustomerDocumentType
+    documentNumber String
+    email String @email
+    phone String
+
+    // projects Project[]
+
+    // require login
+    @@deny('all', auth() == null)
+
+    // can be read by owner or space members
+    @@allow('read', owner == auth() || (team.members?[user == auth()]))
+
+    // when create, owner must be set to current user, and user must be in the team
+    @@allow('create', owner == auth() && team.members?[user == auth()])
+
+    // update is not allowed to change owner
+    @@allow('update', owner == auth() && team.members?[user == auth()] && future().owner == owner)
+
+    // can be deleted by owner
+    @@allow('delete', owner == auth())
+}
+
+// enum ProjectType {
+//     TIPO_1
+//     TIPO_2
+// }
+
+model Project {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    
+    team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId Int
+
+    owner User @relation("OwnedProjects", fields: [ownerId], references: [id])
+    ownerId String @default(auth().id)
+
+    responsible User? @relation("ResponsibleProjects", fields: [responsibleId], references: [id])
+    responsibleId String?
+
+    slug String @unique
+    name String
+    values Float
+    status String
+
+    files File[]
+
+    // require login
+    @@deny('all', auth() == null)
+
+    // can be read by owner or team members
+    @@allow('read', owner == auth() || (team.members?[user == auth()]))
+
+    // when create, owner must be set to current user, and user must be in the team
+    @@allow('create', owner == auth() && team.members?[user == auth()])
+
+    // update is not allowed to change owner
+    @@allow('update', owner == auth() && team.members?[user == auth()] && future().owner == owner)
+
+    // can be deleted by owner
+    @@allow('delete', owner == auth())
+
+    // update cannot change owner
+    @@deny('update', future().owner != owner)
+}
+
+// ProjectType
+// table that describes which documents are required for each project type
+model ProjectTypeDocs {
+    id Int @id @default(autoincrement())
+
+    type String // ProjectType
+    label String
+    description String?
+    multipleFiles Boolean @default(false)
+}
+
+model File {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    
+    owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    ownerId String @default(auth().id)
+
+    team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId Int
+
+    project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    projectId Int
+
+    name String?
+    key String // file key in R2
+    type String
+    size Int
+
+    // require login
+    @@deny('all', auth() == null)
+
+     // can be read by owner or team members
+    @@allow('read', owner == auth() || (team.members?[user == auth()]))
+
+    // when create, owner must be set to current user, and user must be in the team
+    @@allow('create', owner == auth() && team.members?[user == auth()])
+
+    // update is not allowed to change owner
+    @@allow('update', owner == auth() && team.members?[user == auth()] && future().owner == owner)
+
+    // can be deleted by owner
+    @@allow('delete', owner == auth())
+
+    // update cannot change owner
+    @@deny('update', future().owner != owner)
+}
+
+model Notification {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    
+    toUser User @relation("ToUser", fields: [toUserId], references: [id])
+    toUserId String
+
+    fromUser User @relation("FromUser", fields: [fromUserId], references: [id])
+    fromUserId String @default(auth().id)
+
+    team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    teamId Int
+
+    resourceId String
+    type String
+    isRead Boolean @default(false)
+
+    // require login
+    @@deny('all', auth() == null)
+
+     // can be read by owner or team members
+    @@allow('read', team.members?[user == auth()])
+
+    // when create, owner must be set to current user, and user must be in the team
+    @@allow('create', team.members?[user == auth()])
+
+    // update is not allowed to change owner
+    @@allow('update', team.members?[user == auth()])
+
+    // can be deleted by toUser
+    @@allow('delete', toUser == auth())
+
+    // update cannot change fromUser
+    @@deny('update', future().fromUser != fromUser)
+}
 
 model Account {
   id                 String  @id @default(nanoid())
@@ -75,6 +312,13 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id        String   @id @default(nanoid())
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 // enum TokenType {

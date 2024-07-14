@@ -14,28 +14,164 @@ generator client {
 }
 
 /// @@allow('create', true)
+/// @@allow('read', teams?[team.members?[user == auth()]])
 /// @@allow('all', auth() == this)
 model User {
-  id        String    @id() @default(nanoid())
-  firstName String?
-  lastName  String?
-  name      String?
+  id                  String         @id() @default(nanoid())
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt()
+  name                String?
+  firstName           String?
+  lastName            String?
   /// @email
-  email     String    @unique()
+  email               String         @unique()
+  emailVerified       DateTime?
   /// @password
   /// @omit
-  /// @length(8, 16)
-  password  String
-  sessions  Session[]
-  accounts  Account[]
-  tokens    Token[]
+  password            String?
+  globalRole          String         @default("USER")
+  /// @url
+  image               String?
+  teams               TeamUser[]
+  customers           Customer[]
+  ownedProjects       Project[]      @relation("OwnedProjects")
+  responsibleProjects Project[]      @relation("ResponsibleProjects")
+  toNotifications     Notification[] @relation("ToUser")
+  fromNotifications   Notification[] @relation("FromUser")
+  files               File[]
+  tokens              Token[]
+  accounts            Account[]
+  sessions            Session[]
 }
 
-model Session {
-  id        String   @id() @default(nanoid())
-  expiresAt DateTime
-  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+/// @@deny('all', auth() == null)
+/// @@allow('create', true)
+/// @@allow('read', members?[user == auth()])
+/// @@allow('update', members?[user == auth() && (role == 'OWNER' || role == 'ADMIN')])
+/// @@allow('delete', members?[user == auth() && role == 'OWNER'])
+model Team {
+  id            Int            @id() @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt()
+  /// @length(4, 50)
+  name          String
+  slug          String         @unique()
+  members       TeamUser[]
+  customers     Customer[]
+  projects      Project[]
+  files         File[]
+  notifications Notification[]
+}
+
+/// @@deny('all', auth() == null)
+/// @@allow('create,update,delete', team.members?[user == auth() && role == 'ADMIN'])
+/// @@allow('read', team.members?[user == auth()])
+model TeamUser {
+  id        Int      @id() @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
+  role      String
+
+  @@unique([userId, teamId])
+}
+
+/// @@deny('all', auth() == null)
+/// @@allow('read', owner == auth() || team.members?[user == auth()])
+/// @@allow('create', owner == auth() && team.members?[user == auth()])
+/// @@allow('update', owner == auth() && team.members?[user == auth()] && future().owner == owner)
+/// @@allow('delete', owner == auth())
+model Customer {
+  id             Int      @id() @default(autoincrement())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt()
+  team           Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId         Int
+  owner          User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId        String
+  slug           String   @unique()
+  name           String
+  documentType   String
+  documentNumber String
+  /// @email
+  email          String
+  phone          String
+}
+
+/// @@deny('all', auth() == null)
+/// @@allow('read', owner == auth() || team.members?[user == auth()])
+/// @@allow('create', owner == auth() && team.members?[user == auth()])
+/// @@allow('update', owner == auth() && team.members?[user == auth()] && future().owner == owner)
+/// @@allow('delete', owner == auth())
+/// @@deny('update', future().owner != owner)
+model Project {
+  id            Int      @id() @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt()
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId        Int
+  owner         User     @relation("OwnedProjects", fields: [ownerId], references: [id])
+  ownerId       String
+  responsible   User?    @relation("ResponsibleProjects", fields: [responsibleId], references: [id])
+  responsibleId String?
+  slug          String   @unique()
+  name          String
+  values        Float
+  status        String
+  files         File[]
+}
+
+model ProjectTypeDocs {
+  id            Int     @id() @default(autoincrement())
+  type          String
+  label         String
+  description   String?
+  multipleFiles Boolean @default(false)
+}
+
+/// @@deny('all', auth() == null)
+/// @@allow('read', owner == auth() || team.members?[user == auth()])
+/// @@allow('create', owner == auth() && team.members?[user == auth()])
+/// @@allow('update', owner == auth() && team.members?[user == auth()] && future().owner == owner)
+/// @@allow('delete', owner == auth())
+/// @@deny('update', future().owner != owner)
+model File {
+  id        Int      @id() @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    Int
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId Int
+  name      String?
+  key       String
+  type      String
+  size      Int
+}
+
+/// @@deny('all', auth() == null)
+/// @@allow('read', team.members?[user == auth()])
+/// @@allow('create', team.members?[user == auth()])
+/// @@allow('update', team.members?[user == auth()])
+/// @@allow('delete', toUser == auth())
+/// @@deny('update', future().fromUser != fromUser)
+model Notification {
+  id         Int      @id() @default(autoincrement())
+  createdAt  DateTime @default(now())
+  toUser     User     @relation("ToUser", fields: [toUserId], references: [id])
+  toUserId   String
+  fromUser   User     @relation("FromUser", fields: [fromUserId], references: [id])
+  fromUserId String
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId     Int
+  resourceId String
+  type       String
+  isRead     Boolean  @default(false)
 }
 
 model Account {
@@ -54,6 +190,13 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id        String   @id() @default(nanoid())
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model Token {

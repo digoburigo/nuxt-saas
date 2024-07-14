@@ -1,22 +1,23 @@
-import type { inferAsyncReturnType } from '@trpc/server'
-import { enhance } from '@zenstackhq/runtime';
-import type { H3Event } from 'h3'
-import { prisma } from '~~/server/prisma';
+import type { inferAsyncReturnType } from "@trpc/server";
+import type { H3Event } from "h3";
+
+import { enhance } from "@zenstackhq/runtime";
+import { prisma as db } from "~~/server/prisma";
 
 /**
  * Creates context for an incoming request
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = (event: H3Event) => {
-  const dbUser = enhance(prisma, {
+  const prisma = enhance(db, {
     user: event.context.user?.id ? { id: event.context.user?.id } : undefined,
   });
 
   return {
     event,
-    dbUser,
-    dbAdmin: prisma,
-  }
-}
+    prisma,
+    db,
+  };
+};
 
 export type Context = inferAsyncReturnType<typeof createTRPCContext>;

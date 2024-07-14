@@ -1,69 +1,98 @@
 <script lang="ts" setup>
-  import * as z from 'zod';
+import { z } from "zod";
 
-  const route = useRoute();
+const route = useRoute("auth-reset-password___pt-BR");
+const api = useApi();
 
-  const error = ref<string | null>(null);
-  const isLoading = ref(false);
+onMounted(() => {
+	if (!route.query.token) {
+		navigateTo("/");
+	}
+});
 
-  const validationSchema = toTypedSchema(
-    z.object({
-      password: z
-        .string({ required_error: 'Senha é obrigatória' })
-        .min(8, { message: 'A senha precisa de pelo menos 8 caracteres' }),
-      confirm: z
-        .string(({ required_error: 'Senha é obrigatória' })),
-    }).refine(data => data.password === data.confirm, {
-      message: 'As senhas precisam ser as mesmas',
-      path: ['confirm'],
-    })
-  );
+const validationSchema = toTypedSchema(
+	z.object({
+		password: z
+			.string({ required_error: "Senha é obrigatória" })
+			.min(8, { message: "A senha precisa de pelo menos 8 caracteres" }),
+		confirmPassword: z
+			.string(({ required_error: "Senha é obrigatória" })),
+	}).refine(data => data.password === data.confirmPassword, {
+		message: "As senhas precisam ser as mesmas",
+		path: ["confirmPassword"],
+	}),
+);
 
-  const { handleSubmit } = useForm({
-    validationSchema,
-  });
+const form = useForm({
+	validationSchema,
+});
 
-  const onSubmit = handleSubmit(async (values) => {
-    isLoading.value = true;
-    try {
-      await $fetch('/api/auth/reset-password', {
-        method: 'POST',
-        body: { token: route.query.token, password: values.password },
-      })
-      await navigateTo('/auth/login');
-    } catch (err) {
-      error.value = (err as any).data?.message ?? null;
-    } finally {
-      isLoading.value = false;
-    }
-  });
+const { mutate: resetPassword, isPending, error } = api.auth.resetPassword.useMutation({
+	onSuccess: () => {
+		navigateTo("/auth/login");
+	},
+});
+
+const onSubmit = form.handleSubmit(async (values) => {
+	resetPassword({
+		token: route.query.token as string,
+		password: values.password,
+		confirmPassword: values.confirmPassword,
+	});
+});
 </script>
 
 <template>
-  <form method="post" action="/api/auth/reset-password" @submit="onSubmit" class="space-y-3">
-    <FormField v-slot="{ componentField }" name="password">
-      <FormItem>
-        <FormLabel>Nova senha</FormLabel>
-        <FormControl>
-          <Input type="password" required v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
-    <FormField v-slot="{ componentField }" name="confirm">
-      <FormItem>
-        <FormLabel>Confirmar nova senha</FormLabel>
-        <FormControl>
-          <Input type="password" required v-bind="componentField" />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    </FormField>
+	<form
+		class="space-y-3"
+		@submit="onSubmit"
+	>
+		<FormField
+			v-slot="{ componentField }"
+			name="password"
+		>
+			<FormItem>
+				<FormLabel>Nova senha</FormLabel>
+				<FormControl>
+					<Input
+						type="password"
+						required
+						v-bind="componentField"
+					/>
+				</FormControl>
+				<FormMessage />
+			</FormItem>
+		</FormField>
+		<FormField
+			v-slot="{ componentField }"
+			name="confirmPassword"
+		>
+			<FormItem>
+				<FormLabel>Confirmar nova senha</FormLabel>
+				<FormControl>
+					<Input
+						type="password"
+						required
+						v-bind="componentField"
+					/>
+				</FormControl>
+				<FormMessage />
+			</FormItem>
+		</FormField>
 
-    <Button :disabled="isLoading" type="submit" class="w-full">
-      <Icon v-if="isLoading" class="w-4 h-4 mr-2 animate-spin" aria-hidden="true" name="uil:fidget-spinner" />
-      {{ $t('signup.account.form.confirm') }}
-    </Button>
-    <p>{{ error }}</p>
-  </form>
+		<Button
+			:disabled="isPending"
+			type="submit"
+			class="w-full"
+		>
+			<Icon
+				v-if="isPending"
+				class="w-4 h-4 mr-2 animate-spin"
+				aria-hidden="true"
+				name="uil:fidget-spinner"
+			/>
+			{{ $t('signup.account.form.confirm') }}
+		</Button>
+		<p>{{ error }}</p>
+	</form>
 </template>

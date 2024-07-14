@@ -1,37 +1,40 @@
-import { z } from 'zod';
-import { router, publicProcedure } from '../trpc';
-import { Argon2id } from 'oslo/password';
-import { lucia } from '~~/server/utils/auth';
+import { z } from "zod";
+import { Argon2id } from "oslo/password";
+import { generateId } from "lucia";
+import { createDate, TimeSpan } from "oslo";
+import { TRPCError } from "@trpc/server";
+import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { lucia } from "~~/server/utils/auth";
+import { sendEmail } from "~~/server/utils/send-email";
+
+import EmailVerifyUserEmail from "~/emails/EmailVerifyUserEmail.vue";
+import EmailForgotPassword from "~/emails/EmailForgotPassword.vue";
+import type { EmailForgotPasswordProps, EmailVerifyUserEmailProps } from "~/emails/email-props";
 
 export const authRouter = router({
-  logout: publicProcedure.mutation(async ({ ctx: { event } }) => {
-    if (!event.context.session) {
-      throw createError({
-        statusCode: 403,
-      });
+  logout: protectedProcedure.mutation(async ({ ctx: { event } }) => {
+    if (!event.context.session?.id) {
+      throw new TRPCError({ code: "BAD_REQUEST" });
     }
     await lucia.invalidateSession(event.context.session.id);
     appendHeader(
       event,
-      'Set-Cookie',
-      lucia.createBlankSessionCookie().serialize()
+      "Set-Cookie",
+      lucia.createBlankSessionCookie().serialize(),
     );
   }),
+
   login: publicProcedure
     .input(z.object({ email: z.string().email(), password: z.string() }))
-    .mutation(async ({ ctx: { dbAdmin, event }, input: { email, password } }) => {
-
-      const existingUser = await dbAdmin.user.findFirst({
+    .mutation(async ({ ctx: { db, event }, input: { email, password } }) => {
+      const existingUser = await db.user.findFirst({
         where: {
           email,
         },
       });
 
-      if (!existingUser) {
-        throw createError({
-          message: "Algum erro ocorreu. Tente novamente.",
-          statusCode: 400,
-        });
+      if (!existingUser || !existingUser?.password) {
+        throw new TRPCError({ code: "BAD_REQUEST" });
       }
 
       const validPassword = await new Argon2id().verify(
@@ -40,10 +43,7 @@ export const authRouter = router({
       );
 
       if (!validPassword) {
-        throw createError({
-          message: "Algum erro ocorreu. Tente novamente.",
-          statusCode: 400,
-        });
+        throw new TRPCError({ code: "BAD_REQUEST" });
       }
 
       const session = await lucia.createSession(existingUser.id, {});
@@ -58,11 +58,10 @@ export const authRouter = router({
 
   register: publicProcedure
     .input(z.object({ email: z.string().email(), password: z.string(), firstName: z.string(), lastName: z.string() }))
-    .mutation(async ({ ctx: { dbAdmin, event }, input: { email, password, firstName, lastName } }) => {
+    .mutation(async ({ ctx: { db, event }, input: { email, password, firstName, lastName } }) => {
       const hashedPassword = await new Argon2id().hash(password);
-      console.log(`hashedPassword:`, hashedPassword)
       try {
-        const user = await dbAdmin.user.create({
+        const user = await db.user.create({
           data: {
             firstName,
             lastName,
@@ -75,22 +74,162 @@ export const authRouter = router({
         const session = await lucia.createSession(user.id, {});
         appendHeader(
           event,
-          'Set-Cookie',
-          lucia.createSessionCookie(session.id).serialize()
+          "Set-Cookie",
+          lucia.createSessionCookie(session.id).serialize(),
         );
-      } catch (e) {
-        console.log(`e:`, e)
-        // if (e instanceof SqliteError && e.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        //   throw createError({
-        //     message: 'Username already used',
-        //     statusCode: 500,
-        //   });
-        // }
-        throw createError({
-          message: 'An unknown error occurred',
-          statusCode: 500,
+
+        const token = generateId(40);
+        await db.token.create({
+          data: {
+            user: { connect: { id: user.id } },
+            type: "VERIFY_EMAIL",
+            expiresAt: createDate(new TimeSpan(2, "h")),
+            token,
+            sentTo: user.email,
+          },
+        });
+
+        await sendEmail({
+          to: email,
+          subject: "Confirmar email",
+          emailTemplate: EmailVerifyUserEmail,
+          props: {
+            email,
+            token,
+          } satisfies EmailVerifyUserEmailProps,
         });
       }
+      catch (e) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
       return true;
+    }),
+
+  forgotPassword: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .mutation(async ({ ctx: { db }, input: { email } }) => {
+      try {
+        const user = await db.user.findUnique({
+          where: { email },
+        });
+
+        if (user) {
+          await db.token.deleteMany({
+            where: { type: "RESET_PASSWORD", userId: user.id },
+          });
+
+          const token = generateId(40);
+          await db.token.create({
+            data: {
+              user: { connect: { id: user.id } },
+              type: "RESET_PASSWORD",
+              expiresAt: createDate(new TimeSpan(2, "h")),
+              token,
+              sentTo: user.email,
+            },
+          });
+
+          await sendEmail({
+            to: email,
+            subject: "Recuperar senha",
+            emailTemplate: EmailForgotPassword,
+            props: {
+              token,
+              email,
+            } satisfies EmailForgotPasswordProps,
+          });
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 750));
+      }
+      catch (e) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+    }),
+
+  resetPassword: publicProcedure
+    .input(z.object({ token: z.string(), password: z.string(), confirmPassword: z.string() }))
+    .mutation(async ({ ctx: { db }, input: { token, password, confirmPassword } }) => {
+      try {
+        if (password !== confirmPassword) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
+
+        const tokenFound = await db.token.findFirst({
+          where: { token },
+        });
+
+        if (!tokenFound || tokenFound?.type !== "RESET_PASSWORD" || tokenFound?.expiresAt < new Date(tokenFound.expiresAt)) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
+
+        const user = await db.user.findUnique({
+          where: { id: tokenFound?.userId },
+        });
+
+        if (!user) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
+
+        if (user) {
+          await db.token.deleteMany({
+            where: { type: "RESET_PASSWORD", userId: user.id },
+          });
+
+          const hashedPassword = await new Argon2id().hash(password);
+
+          await db.user.update({
+            where: { id: user.id },
+            data: {
+              password: hashedPassword,
+            },
+          });
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 750));
+      }
+      catch (e) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
+    }),
+
+  verifyEmail: protectedProcedure
+    .input(z.object({ token: z.string() }))
+    .mutation(async ({ ctx: { db }, input: { token } }) => {
+      try {
+        const tokenFound = await db.token.findFirst({
+          where: { token },
+        });
+
+        if (!tokenFound || tokenFound?.type !== "VERIFY_EMAIL" || tokenFound?.expiresAt < new Date(tokenFound.expiresAt)) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
+
+        const user = await db.user.findUnique({
+          where: { id: tokenFound?.userId },
+        });
+
+        if (!user) {
+          throw new TRPCError({ code: "BAD_REQUEST" });
+        }
+
+        if (user) {
+          await db.token.deleteMany({
+            where: { type: "VERIFY_EMAIL", userId: user.id },
+          });
+
+          await db.user.update({
+            where: { id: user.id },
+            data: {
+              emailVerified: new Date(),
+            },
+          });
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 750));
+      }
+      catch (e) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      }
     }),
 });

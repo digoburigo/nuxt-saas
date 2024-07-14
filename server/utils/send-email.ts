@@ -1,29 +1,32 @@
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
-import { render } from '@vue-email/render';
+import { render } from "@vue-email/render";
+import type { Component } from "vue";
+
+const config = useRuntimeConfig();
 
 type Props = {
-  emailTemplate: any;
-  props: any;
+  emailTemplate: Component;
+  props: object;
   to: string;
   subject: string;
 };
 
 export async function sendEmail({ emailTemplate, props, to, subject }: Props) {
   const html = await render(emailTemplate, {
-    props
+    ...props,
   });
 
   const smtpOptions: SMTPTransport.Options = {
     // remove "service"
     service: "Gmail",
-    host: process.env.SMTP_HOST || "smtp.mailtrap.io",
-    port: parseInt(process.env.SMTP_PORT || "2525"),
+    host: config.smtpHost || "smtp.mailtrap.io",
+    port: parseInt(config.smtpPort || "2525"),
     secure: true,
     // secure: false,
     auth: {
-      user: process.env.SMTP_USER || "user",
-      pass: process.env.SMTP_PASSWORD || "password",
+      user: config.smtpUser || "user",
+      pass: config.smtpPassword || "password",
     },
   };
 
@@ -32,7 +35,7 @@ export async function sendEmail({ emailTemplate, props, to, subject }: Props) {
   });
 
   const options = {
-    from: process.env.SMTP_FROM_EMAIL || "rodrigobesmeraldino@gmail.com",
+    from: config.smtpFromEmail || "rodrigobesmeraldino@gmail.com",
     to,
     subject,
     html,

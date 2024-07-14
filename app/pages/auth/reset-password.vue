@@ -1,6 +1,3 @@
-<script lang="ts" setup>
-</script>
-
 <template>
   <div class="w-screen h-screen flex flex-col justify-center">
     <Card class="mx-auto max-w-sm">

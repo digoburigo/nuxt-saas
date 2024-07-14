@@ -1,10 +1,9 @@
 <script setup lang="ts">
-
 // definePageMeta({
 //   middleware: ["protected"],
 // });
 
-const route = useRoute('app-team___pt-BR');
+const route = useRoute("app-team___pt-BR");
 </script>
 
 <template>

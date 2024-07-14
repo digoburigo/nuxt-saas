@@ -5,9 +5,9 @@
 
 import { createNuxtApiHandler } from "@colonel-sandvich/trpc-vue-query";
 import { createTRPCContext } from "~~/server/trpc/context";
-import { appRouter } from '~~/server/trpc/routers';
+import { appRouter } from "~~/server/trpc/routers";
 
 export default createNuxtApiHandler({
-  router: appRouter,
-  createContext: createTRPCContext
+	router: appRouter,
+	createContext: createTRPCContext,
 });
